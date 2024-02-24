@@ -78,7 +78,7 @@ int Game::update() {
 
   this->meshRenderer->Draw();
 
-  this->font->RenderText(this->spriteBatcher.get(), "Hello, Cube!",
+  this->font->RenderText(this->spriteBatcher.get(), "Hello, Cat!",
                          glm::vec2(200, 200), glm::vec2(1.0f),
                          glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 

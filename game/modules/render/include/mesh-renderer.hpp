@@ -23,6 +23,8 @@ public:
   void Draw();
 
 private:
+  void loadModel();
+
   std::vector<Vertex3D> vertices = {
       // front top left
       Vertex3D(-0.5, 0.5, 0.5),
@@ -65,4 +67,6 @@ private:
   Shader fragmentShader;
 
   GLuint shaderProgram;
+
+  glm::mat4 model;
 };
