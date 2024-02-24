@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <asset-manager.hpp>
 #include <input.hpp>
+#include <opencv2\opencv.hpp>
 
 static Game *game; // this is dirty but it works for now
 
@@ -58,6 +59,10 @@ int Game::init(SharedData *shared_data) {
   this->mixer = std::make_unique<Mixer>();
 
   this->font = AssetManager<Font>::getFont(RES_FONT_VERA, 32);
+
+  cv::namedWindow("Display window");
+
+  //capture = cv::VideoCapture(0);
 
 #ifndef EMSCRIPTEN
   this->mixer->ToggleMute();

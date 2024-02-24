@@ -6,6 +6,7 @@
 #include <mixer.hpp>
 #include <shared-data.hpp>
 #include <sprite-batch.hpp>
+#include <opencv2\opencv.hpp>
 
 class Game {
 public:
@@ -23,4 +24,8 @@ public:
   std::unique_ptr<Mixer> mixer;
 
   std::shared_ptr<Font> font;
+
+  //cv::Mat image;
+
+  //cv::VideoCapture capture;
 };

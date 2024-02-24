@@ -27,6 +27,7 @@ else()
     if (WIN32)
         option(WIN_VSCODE_APPEND_CONFIG "Use default vscode structure, not VS2022" OFF) # when distributing, set to OFF
     endif()
+    set(BUILD_SHARED_LIBS OFF)
 endif()
 
 # log if we are building shared or static libraries

@@ -22,6 +22,8 @@ if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
     find_package(SDL2 REQUIRED)
     find_package(sdl2-mixer REQUIRED)
     find_package(Freetype REQUIRED)
+    find_package(OpenCV REQUIRED)
+    # target_link_libraries(target_name ${OpenCV_LIBS})
 endif()
 
 add_subdirectory(lib/glad)
@@ -71,6 +73,9 @@ target_link_libraries(${PROJECT_NAME} PUBLIC mixer)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/modules/render/include)
 target_link_libraries(${PROJECT_NAME} PUBLIC render)
+
+target_include_directories( ${OpenCV_INCLUDE_DIRS} )
+target_link_libraries( ${OpenCV_LIBS} )
 
 # set a variable for the directory where the assets are copied to, on non windows it is CMAKE_RUNTIME_OUTPUT_DIRECTORY, on windows it is CMAKE_RUNTIME_OUTPUT_DIRECTORY/(Debug|Release)
 if(WIN32)
