@@ -9,10 +9,20 @@
 
 struct Vertex3D {
   glm::vec3 position;
+  glm::vec2 texCoords;
+  glm::vec3 normal;
 
-  Vertex3D(glm::vec3 position) : position(position) {}
+  Vertex3D(glm::vec3 position, glm::vec2 texCoords)
+      : position(position), texCoords(texCoords), normal(normal) {}
 
-  Vertex3D(float x, float y, float z) { position = glm::vec3(x, y, z); }
+  Vertex3D(float x, float y, float z, float u, float v, float nx, float ny,
+           float nz) {
+    position = glm::vec3(x, y, z);
+    texCoords = glm::vec2(u, v);
+    normal = glm::vec3(nx, ny, nz);
+  }
+
+  Vertex3D() {}
 };
 
 class MeshRenderer {
@@ -25,40 +35,10 @@ public:
 private:
   void loadModel();
 
-  std::vector<Vertex3D> vertices = {
-      // front top left
-      Vertex3D(-0.5, 0.5, 0.5),
-      // front top left
-      Vertex3D(0.5, 0.5, 0.5),
-      // front bottom right
-      Vertex3D(0.5, -0.5, 0.5),
-      // front bottom left
-      Vertex3D(-0.5, -0.5, 0.5),
-      // back top left
-      Vertex3D(-0.5, 0.5, -0.5),
-      // back top right
-      Vertex3D(0.5, 0.5, -0.5),
-      // back bottom right
-      Vertex3D(0.5, -0.5, -0.5),
-      // back bottom left
-      Vertex3D(-0.5, -0.5, -0.5),
-  };
+  std::vector<Vertex3D> vertices;
   GLuint vbo;
 
-  std::vector<GLuint> indices = {
-      0, 3, 2, // Front 1
-      2, 1, 0, // Front 2
-      1, 5, 6, // Right 1
-      6, 2, 1, // Right 2
-      5, 4, 7, // Left 1
-      7, 6, 5, // Left 2
-      4, 7, 3, // Back 1
-      3, 0, 4, // Back 2
-      4, 5, 1, // Top 1
-      1, 0, 4, // Top 2
-      3, 2, 6, // Bottom 1
-      6, 7, 3  // Bottom 2,
-  };
+  std::vector<GLuint> indices;
   GLuint ebo;
 
   GLuint vao;

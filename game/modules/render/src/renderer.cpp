@@ -62,6 +62,8 @@ Renderer::Renderer(Window *window) {
                         0, NULL, GL_TRUE);
 #endif
 
+  glEnable(GL_DEPTH_TEST);
+
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -80,6 +82,9 @@ Renderer::~Renderer() {
 void Renderer::Clear() {
   // Clear the color buffer
   glClear(GL_COLOR_BUFFER_BIT);
+
+  // Clear the depth buffer
+  glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::Present() {
