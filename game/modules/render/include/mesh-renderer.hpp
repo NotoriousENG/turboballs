@@ -23,6 +23,8 @@ public:
   void Draw();
 
 private:
+  void LoadModel();
+
   std::vector<Vertex3D> vertices = {
       // front top left
       Vertex3D(-0.5, 0.5, 0.5),
