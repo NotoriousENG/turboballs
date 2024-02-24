@@ -62,7 +62,9 @@ int Game::init(SharedData *shared_data) {
 
   cv::namedWindow("Display window");
 
-  //capture = cv::VideoCapture(0);
+  SDL_Log("Before capture\n");
+  capture = cv::VideoCapture(cv::CAP_ANY);
+  SDL_Log("After capture\n");
 
 #ifndef EMSCRIPTEN
   this->mixer->ToggleMute();
@@ -89,6 +91,16 @@ int Game::update() {
 
   // draw all sprites in the batch (note text is also a sprite)
   this->spriteBatcher->Flush();
+
+  if (!capture.isOpened()) {
+    SDL_Log("Camera Closed\n");
+  } else {
+    SDL_Log("Camera Open\n");
+    capture >> image;
+
+    imshow("Display window", image);
+    cv::waitKey(25);
+  }
 
   return 0;
 }

@@ -25,7 +25,7 @@ public:
 
   std::shared_ptr<Font> font;
 
-  //cv::Mat image;
+  cv::Mat image;
 
-  //cv::VideoCapture capture;
+  cv::VideoCapture capture;
 };
