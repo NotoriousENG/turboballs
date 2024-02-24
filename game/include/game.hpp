@@ -2,6 +2,7 @@
 
 #include <font.hpp>
 #include <memory>
+#include <mesh-renderer.hpp>
 #include <mixer.hpp>
 #include <shared-data.hpp>
 #include <sprite-batch.hpp>
@@ -16,6 +17,8 @@ public:
   int close();
 
   std::unique_ptr<SpriteBatch> spriteBatcher;
+
+  std::unique_ptr<MeshRenderer> meshRenderer;
 
   std::unique_ptr<Mixer> mixer;
 

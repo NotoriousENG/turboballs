@@ -53,6 +53,8 @@ int Game::init(SharedData *shared_data) {
   SDL_GetWindowSize(SDL_GL_GetCurrentWindow(), &w, &h);
   this->spriteBatcher = std::make_unique<SpriteBatch>(glm::vec2(w, h));
 
+  this->meshRenderer = std::make_unique<MeshRenderer>();
+
   this->mixer = std::make_unique<Mixer>();
 
   this->font = AssetManager<Font>::getFont(RES_FONT_VERA, 32);
@@ -74,10 +76,11 @@ int Game::update() {
   const Uint8 *key_state = SDL_GetKeyboardState(&num_keys);
   InputManager::Update(key_state, num_keys);
 
-  // clear the screen
-  this->font->RenderText(this->spriteBatcher.get(), "Hello, World!",
+  this->meshRenderer->Draw();
+
+  this->font->RenderText(this->spriteBatcher.get(), "Hello, Cube!",
                          glm::vec2(200, 200), glm::vec2(1.0f),
-                         glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+                         glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 
   // draw all sprites in the batch (note text is also a sprite)
   this->spriteBatcher->Flush();

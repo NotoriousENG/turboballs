@@ -13,8 +13,8 @@ include_directories(include)
 # add the library
 add_library (${PROJECT_NAME} STATIC "src/renderer.cpp" 
 "src/window.cpp" "src/shader.cpp" "src/texture.cpp" 
-"src/sprite-batch.cpp"
-"src/spritesheet.cpp" "src/font.cpp")
+"src/sprite-batch.cpp" "src/spritesheet.cpp" 
+"src/font.cpp" "src/mesh-renderer.cpp")
 
 # dependencies
 
