@@ -4,6 +4,7 @@
 #include <memory>
 #include <mesh-renderer.hpp>
 #include <mixer.hpp>
+#include <model.hpp>
 #include <shared-data.hpp>
 #include <sprite-batch.hpp>
 
@@ -23,4 +24,6 @@ public:
   std::unique_ptr<Mixer> mixer;
 
   std::shared_ptr<Font> font;
+
+  std::shared_ptr<Model> model;
 };
