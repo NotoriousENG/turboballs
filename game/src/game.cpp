@@ -59,7 +59,7 @@ int Game::init(SharedData *shared_data) {
 
   this->font = AssetManager<Font>::getFont(RES_FONT_VERA, 32);
 
-  this->model = AssetManager<Model>::get(RES_MODEL_VAPOR);
+  this->model = AssetManager<Model>::get(RES_MODEL_VAPOR_GLB);
 
 #ifndef EMSCRIPTEN
   this->mixer->ToggleMute();
@@ -81,7 +81,7 @@ int Game::update() {
   const auto meshes = this->model->getMeshes();
 
   for (const auto &mesh : meshes) {
-    this->meshRenderer->DrawMesh(mesh.get(), glm::mat4(1.0f));
+    this->meshRenderer->DrawMesh(mesh.get(), mesh->model);
   }
 
   this->font->RenderText(this->spriteBatcher.get(), "Hello, Map!",

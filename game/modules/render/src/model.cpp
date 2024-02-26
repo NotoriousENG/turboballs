@@ -3,6 +3,8 @@
 #include "tiny_gltf.h"
 #include "tiny_obj_loader.h"
 #include <SDL.h>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 Model::Model(std::string path) {
   // get file extension
@@ -13,12 +15,10 @@ Model::Model(std::string path) {
 
   SDL_Log("File extension: %s", ext.c_str());
 
-  // switch on file extension (toLower)
-  if (ext == "obj") {
-    loadObj(path);
-  } else if (ext == "gltf" || ext == "glb") {
-    SDL_Log("Warning: GLTF parrent-child transformation not implemented yet!");
+  if (ext == "gltf" || ext == "glb") {
     loadGLTF(path);
+  } else if (ext == "obj") {
+    loadObj(path);
   } else {
     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                  "Model: Unsupported file format: %s", ext.c_str());
@@ -26,6 +26,8 @@ Model::Model(std::string path) {
 }
 
 void Model::loadObj(std::string path) {
+  SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Warning: prefer glTF over obj");
+
   std::string dir = path.substr(0, path.find_last_of('/'));
 
   tinyobj::ObjReaderConfig reader_config;
@@ -222,6 +224,8 @@ void Model::loadGLTF(std::string path) {
                .data[indexAccessor.byteOffset + indexBufferView.byteOffset];
 
       // Populate the indices vector
+      // gltf indices can be of type UNSIGNED_INT, UNSIGNED_SHORT or
+      // UNSIGNED_BYTE, without this branching stack smashing occurs
       for (size_t i = 0; i < indexCount; i++) {
         if (indexType == TINYGLTF_PARAMETER_TYPE_UNSIGNED_INT) {
           const auto *data = reinterpret_cast<const uint32_t *>(indexData);
@@ -238,5 +242,40 @@ void Model::loadGLTF(std::string path) {
       std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(vertices, indices);
       meshes.push_back(mesh);
     }
+  }
+
+  // get nodes
+  for (const auto &node : model.nodes) {
+    SDL_Log("Node name: %s", node.name.c_str());
+
+    const auto meshId = node.mesh;
+
+    // get the mesh id
+    if (meshId >= 0) {
+      SDL_Log("Mesh id: %d", meshId);
+    } else {
+      continue;
+    }
+
+    glm::mat4 model = glm::mat4(1.0f);
+
+    // get the translation, rotation and scale (if any)
+    if (!node.translation.empty()) {
+      model = glm::translate(model,
+                             glm::vec3(node.translation[0], node.translation[1],
+                                       node.translation[2]));
+    }
+    if (!node.rotation.empty()) {
+      glm::quat q = glm::quat(node.rotation[3], node.rotation[0],
+                              node.rotation[1], node.rotation[2]);
+      model = model * glm::mat4_cast(q);
+    }
+    if (!node.scale.empty()) {
+      model = glm::scale(
+          model, glm::vec3(node.scale[0], node.scale[1], node.scale[2]));
+    }
+
+    // add the model matrix to the mesh
+    meshes[meshId]->model = model;
   }
 }

@@ -32,4 +32,6 @@ struct Mesh {
 
   std::vector<Vertex3D> vertices;
   std::vector<GLuint> indices;
+
+  glm::mat4 model = glm::mat4(1.0f);
 };
