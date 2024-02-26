@@ -1,9 +1,31 @@
 #include "model.hpp"
 
+#include "tiny_gltf.h"
 #include "tiny_obj_loader.h"
 #include <SDL.h>
 
 Model::Model(std::string path) {
+  // get file extension
+  std::string ext = path.substr(path.find_last_of('.') + 1);
+  for (auto &c : ext) {
+    c = tolower(c);
+  }
+
+  SDL_Log("File extension: %s", ext.c_str());
+
+  // switch on file extension (toLower)
+  if (ext == "obj") {
+    loadObj(path);
+  } else if (ext == "gltf" || ext == "glb") {
+    SDL_Log("Warning: GLTF parrent-child transformation not implemented yet!");
+    loadGLTF(path);
+  } else {
+    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                 "Model: Unsupported file format: %s", ext.c_str());
+  }
+}
+
+void Model::loadObj(std::string path) {
   std::string dir = path.substr(0, path.find_last_of('/'));
 
   tinyobj::ObjReaderConfig reader_config;
@@ -96,5 +118,125 @@ Model::Model(std::string path) {
 
     std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(vertices, indices);
     meshes.push_back(mesh);
+  }
+}
+
+void Model::loadGLTF(std::string path) {
+  const bool isBinary = (path.substr(path.find_last_of('.') + 1) == "glb");
+
+  tinygltf::Model model;
+  tinygltf::TinyGLTF loader;
+  std::string err;
+  std::string warn;
+
+  bool ret = isBinary ? loader.LoadBinaryFromFile(&model, &err, &warn, path)
+                      : loader.LoadASCIIFromFile(&model, &err, &warn, path);
+
+  if (!warn.empty()) {
+    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "TinyGLTF: %s", warn.c_str());
+  }
+
+  if (!err.empty()) {
+    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "TinyGLTF: %s", err.c_str());
+  }
+
+  if (!ret) {
+    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "TinyGLTF: Failed to load glTF");
+    return;
+  }
+
+  // Loop through the model and load the meshes
+  for (const auto &m : model.meshes) {
+    for (const auto &p : m.primitives) {
+      std::vector<Vertex3D> vertices;
+      std::vector<GLuint> indices;
+
+      // Get the vertex data
+
+      // POSITION
+
+      const auto &posAccessor = model.accessors[p.attributes.at("POSITION")];
+      const auto &posBufferView = model.bufferViews[posAccessor.bufferView];
+      const auto &posBuffer = model.buffers[posBufferView.buffer];
+
+      const float *posData = reinterpret_cast<const float *>(
+          &posBuffer.data[posAccessor.byteOffset + posBufferView.byteOffset]);
+
+      const auto &posType = posAccessor.type;
+      const auto &posCompType = posAccessor.componentType;
+      const auto &posCount = posAccessor.count;
+      const auto &posCompSize = posAccessor.type;
+
+      // NORMAL
+
+      const auto &normalAccessor = model.accessors[p.attributes.at("NORMAL")];
+      const auto &normalBufferView =
+          model.bufferViews[normalAccessor.bufferView];
+      const auto &normalBuffer = model.buffers[normalBufferView.buffer];
+
+      const float *normalData = reinterpret_cast<const float *>(
+          &normalBuffer
+               .data[normalAccessor.byteOffset + normalBufferView.byteOffset]);
+
+      const auto &normalType = normalAccessor.type;
+      const auto &normalCompType = normalAccessor.componentType;
+      const auto &normalCount = normalAccessor.count;
+      const auto &normalCompSize = normalAccessor.type;
+
+      // TEXCOORD_0
+
+      const auto &texAccessor = model.accessors[p.attributes.at("TEXCOORD_0")];
+      const auto &texBufferView = model.bufferViews[texAccessor.bufferView];
+      const auto &texBuffer = model.buffers[texBufferView.buffer];
+
+      const float *texData = reinterpret_cast<const float *>(
+          &texBuffer.data[texAccessor.byteOffset + texBufferView.byteOffset]);
+
+      const auto &texType = texAccessor.type;
+      const auto &texCompType = texAccessor.componentType;
+      const auto &texCount = texAccessor.count;
+      const auto &texCompSize = texAccessor.type;
+
+      // Populate the vertices vector (pos, texCoords, normal)
+      for (size_t i = 0; i < posCount; i++) {
+        Vertex3D vertex;
+        vertex.position =
+            glm::vec3(posData[i * 3], posData[i * 3 + 1], posData[i * 3 + 2]);
+        vertex.normal = glm::vec3(normalData[i * 3], normalData[i * 3 + 1],
+                                  normalData[i * 3 + 2]);
+        vertex.texCoords = glm::vec2(texData[i * 2], texData[i * 2 + 1]);
+
+        vertices.push_back(vertex);
+      }
+
+      // Get the index data
+      const auto &indexAccessor = model.accessors[p.indices];
+      const auto &indexBufferView = model.bufferViews[indexAccessor.bufferView];
+      const auto &indexBuffer = model.buffers[indexBufferView.buffer];
+
+      const auto indexType = indexAccessor.componentType;
+      const auto indexCount = indexAccessor.count;
+
+      const void *indexData =
+          &indexBuffer
+               .data[indexAccessor.byteOffset + indexBufferView.byteOffset];
+
+      // Populate the indices vector
+      for (size_t i = 0; i < indexCount; i++) {
+        if (indexType == TINYGLTF_PARAMETER_TYPE_UNSIGNED_INT) {
+          const auto *data = reinterpret_cast<const uint32_t *>(indexData);
+          indices.push_back(data[i]);
+        } else if (indexType == TINYGLTF_PARAMETER_TYPE_UNSIGNED_SHORT) {
+          const auto *data = reinterpret_cast<const uint16_t *>(indexData);
+          indices.push_back(data[i]);
+        } else if (indexType == TINYGLTF_PARAMETER_TYPE_UNSIGNED_BYTE) {
+          const auto *data = reinterpret_cast<const uint8_t *>(indexData);
+          indices.push_back(data[i]);
+        }
+      }
+
+      std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(vertices, indices);
+      meshes.push_back(mesh);
+    }
   }
 }

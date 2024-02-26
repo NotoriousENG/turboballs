@@ -9,3 +9,5 @@
 #define RES_MODEL_SPHERE "assets/models/sphere.obj"
 
 #define RES_MODEL_VAPOR "assets/models/vaporwave/vapor.obj"
+
+#define RES_MODEL_VAPOR_GLB "assets/models/vaporwave/vapor.glb"
