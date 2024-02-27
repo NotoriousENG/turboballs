@@ -68,7 +68,11 @@ int Game::init(SharedData *shared_data) {
   glm::vec2 center = glm::vec2(w / 2, h / 2);
   SDL_Rect bounds = {0, 0, w, h};
 
-  this->spriteBatcher->UpdateCamera(center, bounds);
+  this->spriteBatcher->UpdateCamera(center,
+                                    bounds); // this is needed for sprites/text
+
+  // set clear color to night dark blue
+  glClearColor(0.0f, 0.0f, 0.07f, 1.0f);
 
   return 0;
 }
