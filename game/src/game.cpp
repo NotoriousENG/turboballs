@@ -10,6 +10,7 @@ static Game *game; // this is dirty but it works for now
 #ifdef SHARED_GAME
 #include <cassert>
 #include <cr.h>
+#include <glm/ext/matrix_transform.hpp>
 
 static int loaded_timestamp = 0;
 
@@ -59,7 +60,14 @@ int Game::init(SharedData *shared_data) {
 
   this->font = AssetManager<Font>::getFont(RES_FONT_VERA, 32);
 
-  this->model = AssetManager<Model>::get(RES_MODEL_VAPOR);
+  this->worldModel = AssetManager<Model>::get(RES_MODEL_VAPOR);
+
+  this->npcModel = AssetManager<Model>::get(RES_MODEL_POLY);
+
+  for (const auto &mesh : this->npcModel->getMeshes()) {
+    // scale the model up by 10
+    mesh->model = glm::scale(mesh->model, glm::vec3(5.0f));
+  }
 
 #ifndef EMSCRIPTEN
   this->mixer->ToggleMute();
@@ -82,14 +90,16 @@ int Game::update() {
   const Uint8 *key_state = SDL_GetKeyboardState(&num_keys);
   InputManager::Update(key_state, num_keys);
 
-  const auto meshes = this->model->getMeshes();
-
-  for (const auto &mesh : meshes) {
+  for (const auto &mesh : this->worldModel->getMeshes()) {
     this->meshRenderer->DrawMesh(mesh.get(), mesh->model);
   }
 
-  this->font->RenderText(this->spriteBatcher.get(), "Hello, Materials!",
-                         glm::vec2(200, 200), glm::vec2(1.0f),
+  for (const auto &mesh : this->npcModel->getMeshes()) {
+    this->meshRenderer->DrawMesh(mesh.get(), mesh->model);
+  }
+
+  this->font->RenderText(this->spriteBatcher.get(), "Hello, NPC!",
+                         glm::vec2(0, 0), glm::vec2(1.0f),
                          glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 
   // draw all sprites in the batch (note text is also a sprite)

@@ -19,7 +19,7 @@ struct Material {
 uniform Material material;
 
 const vec3 ambient = vec3(0.1);
-const vec3 lightColor = vec3(1.0);
+const vec3 lightColor = vec3(1.0, 0.27, 0.12);
 const vec3 lightPos = vec3(0.0, 1.75, -17.85);
 
 vec3 ACESFilm(vec3 x) {

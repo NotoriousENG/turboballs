@@ -25,5 +25,7 @@ public:
 
   std::shared_ptr<Font> font;
 
-  std::shared_ptr<Model> model;
+  std::shared_ptr<Model> worldModel;
+
+  std::shared_ptr<Model> npcModel;
 };
