@@ -4,6 +4,7 @@ precision highp float;
 in vec3 FragPos;
 in vec2 TexCoords;
 in vec3 Normals;
+in vec3 CamPos;
 
 out vec4 FragColor;
 
@@ -17,8 +18,48 @@ struct Material {
 
 uniform Material material;
 
+const vec3 ambient = vec3(0.1);
+const vec3 lightColor = vec3(1.0);
+const vec3 lightPos = vec3(0.0, 1.75, -17.85);
+
+vec3 ACESFilm(vec3 x) {
+  const float A = 2.51;
+  const float B = 0.03;
+  const float C = 2.43;
+  const float D = 0.59;
+  const float E = 0.14;
+
+  return clamp((x * (A * x + B)) / (x * (C * x + D) + E), 0.0, 1.0);
+}
+
+vec3 getLitResult(vec3 objectColor) {
+
+  vec3 norm = normalize(Normals);
+  vec3 lightDir = normalize(lightPos - FragPos);
+
+  // estimate specular strength from the metallic factor and roughness factor
+  float specularStrength =
+      0.5 + 0.5 * (1.0 - material.metallicFactor) * material.roughnessFactor;
+  vec3 viewDir = normalize(CamPos - FragPos);
+  vec3 reflectDir = reflect(-lightDir, norm);
+  float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+  vec3 specular = specularStrength * spec * lightColor;
+
+  float diff = max(dot(norm, lightDir), 0.0);
+  vec3 diffuse = lightColor * diff;
+
+  vec3 result = (ambient + diffuse + specular) * objectColor;
+
+  // ACES tone mapping
+  result = ACESFilm(result);
+
+  // gamma correction
+  result = pow(result, vec3(1.0 / 2.2));
+
+  return result;
+}
+
 void main() {
-  vec3 ambient = vec3(0.1, 0.1, 0.1);
   vec3 objectColor = material.baseColorFactor * (1.0 - material.metallicFactor);
   objectColor += material.emissiveFactor * material.emissiveStrength;
 
@@ -28,15 +69,6 @@ void main() {
     return;
   }
 
-  vec3 lightColor = vec3(1.0);
-  vec3 lightPos = vec3(5.0, 5.0, 0.0);
-
-  vec3 norm = normalize(Normals);
-  vec3 lightDir = normalize(lightPos - FragPos);
-
-  float diff = max(dot(norm, lightDir), 0.0);
-  vec3 diffuse = lightColor * diff;
-
-  vec3 result = (ambient + diffuse) * objectColor;
+  vec3 result = getLitResult(objectColor);
   FragColor = vec4(result, 1.0);
 }

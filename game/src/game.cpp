@@ -44,7 +44,7 @@ Game::~Game() {}
 
 int Game::init(SharedData *shared_data) {
   SDL_Log("Game init");
-  SDL_SetWindowTitle(SDL_GL_GetCurrentWindow(), "Tink's World");
+  SDL_SetWindowTitle(SDL_GL_GetCurrentWindow(), "Turboballs");
 
   // map the text_input_buffer
   InputManager::SetTextInputBuffer(&shared_data->text_input_buffer[0]);
@@ -84,7 +84,7 @@ int Game::update() {
     this->meshRenderer->DrawMesh(mesh.get(), mesh->model);
   }
 
-  this->font->RenderText(this->spriteBatcher.get(), "Hello, Map!",
+  this->font->RenderText(this->spriteBatcher.get(), "Hello, Materials!",
                          glm::vec2(200, 200), glm::vec2(1.0f),
                          glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 
