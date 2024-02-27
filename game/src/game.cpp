@@ -59,7 +59,7 @@ int Game::init(SharedData *shared_data) {
 
   this->font = AssetManager<Font>::getFont(RES_FONT_VERA, 32);
 
-  this->model = AssetManager<Model>::get(RES_MODEL_VAPOR_GLB);
+  this->model = AssetManager<Model>::get(RES_MODEL_VAPOR);
 
 #ifndef EMSCRIPTEN
   this->mixer->ToggleMute();

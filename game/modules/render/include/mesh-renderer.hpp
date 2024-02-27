@@ -13,6 +13,7 @@ public:
   void DrawMesh(Mesh *mesh, glm::mat4 model);
 
 private:
+  void setMaterialUniforms(GLuint shaderProgram, const Material *material);
   Shader vertexShader;
   Shader fragmentShader;
   GLuint shaderProgram;

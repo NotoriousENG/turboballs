@@ -4,10 +4,8 @@
 
 #define RES_FONT_VERA "assets/fonts/Vera.ttf"
 
-#define RES_MODEL_CUBE "assets/models/cube.obj"
+#define RES_MODEL_CUBE "assets/models/cube.glb"
 
-#define RES_MODEL_SPHERE "assets/models/sphere.obj"
+#define RES_MODEL_SPHERE "assets/models/sphere.glb"
 
-#define RES_MODEL_VAPOR "assets/models/vaporwave/vapor.obj"
-
-#define RES_MODEL_VAPOR_GLB "assets/models/vaporwave/vapor.glb"
+#define RES_MODEL_VAPOR "assets/models/vaporwave/vapor.glb"

@@ -52,6 +52,10 @@ void MeshRenderer::DrawMesh(Mesh *mesh, glm::mat4 model) {
   GLint modelLoc = glGetUniformLocation(this->shaderProgram, "model");
   glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
+  if (mesh->material) {
+    setMaterialUniforms(this->shaderProgram, mesh->material.get());
+  }
+
   glBindVertexArray(mesh->vao);
 
   glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
@@ -80,4 +84,18 @@ void MeshRenderer::DrawMesh(Mesh *mesh, glm::mat4 model) {
   glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
   glUseProgram(0);
+}
+
+void MeshRenderer::setMaterialUniforms(GLuint shaderProgram,
+                                       const Material *material) {
+  glUniform3fv(glGetUniformLocation(shaderProgram, "material.baseColorFactor"),
+               1, glm::value_ptr(material->baseColorFactor));
+  glUniform1f(glGetUniformLocation(shaderProgram, "material.metallicFactor"),
+              material->metallicFactor);
+  glUniform1f(glGetUniformLocation(shaderProgram, "material.roughnessFactor"),
+              material->roughnessFactor);
+  glUniform3fv(glGetUniformLocation(shaderProgram, "material.emissiveFactor"),
+               1, glm::value_ptr(material->emissiveFactor));
+  glUniform1f(glGetUniformLocation(shaderProgram, "material.emissiveStrength"),
+              material->emissiveStrength);
 }

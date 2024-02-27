@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <memory>
 #include <vector>
 
 struct Vertex3D {
@@ -22,6 +23,14 @@ struct Vertex3D {
   Vertex3D() {}
 };
 
+struct Material {
+  glm::vec3 baseColorFactor;
+  float metallicFactor;
+  float roughnessFactor;
+  glm::vec3 emissiveFactor;
+  float emissiveStrength;
+};
+
 struct Mesh {
   Mesh(std::vector<Vertex3D> vertices, std::vector<GLuint> indices);
   ~Mesh();
@@ -34,4 +43,5 @@ struct Mesh {
   std::vector<GLuint> indices;
 
   glm::mat4 model = glm::mat4(1.0f);
+  std::shared_ptr<Material> material;
 };
