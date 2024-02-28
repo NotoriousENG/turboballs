@@ -31,6 +31,9 @@ private:
   std::unique_ptr<Window> window;
   std::unique_ptr<Renderer> renderer;
 
+  SDL_AudioSpec want, have;
+  SDL_AudioDeviceID dev;
+
   SharedData shared_data;
 
 #ifdef SHARED_GAME
@@ -39,3 +42,7 @@ private:
   Game game;
 #endif
 };
+
+static float input_volume = 0.5f;
+
+void audio_callback(void *userdata, Uint8 *stream, int len);

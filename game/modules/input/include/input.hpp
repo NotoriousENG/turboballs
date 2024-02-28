@@ -38,6 +38,7 @@ private:
   bool use_text_input = false;
 
   const char *text_input_buffer = "";
+  float *input_volume_ref = nullptr;
 
 public:
   static void Update(const uint8_t *key_state, const int num_keys);
@@ -59,6 +60,10 @@ public:
   static const char *GetTextInputBuffer();
 
   static void SetTextInputBuffer(const char *text);
+
+  static float GetInputVolume();
+
+  static void SetInputVolumeRef(float *volume);
 
   static bool IsTextInputActive();
 };

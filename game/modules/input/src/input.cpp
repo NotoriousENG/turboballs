@@ -102,6 +102,17 @@ void InputManager::SetTextInputBuffer(const char *text) {
   instance->text_input_buffer = text;
 }
 
+float InputManager::GetInputVolume() {
+  std::lock_guard<std::mutex> lock(instance->mtx); // thread safety
+  return instance->input_volume_ref == nullptr ? 0.0f
+                                               : *instance->input_volume_ref;
+}
+
+void InputManager::SetInputVolumeRef(float *volume) {
+  std::lock_guard<std::mutex> lock(instance->mtx); // thread safety
+  instance->input_volume_ref = volume;
+}
+
 bool InputManager::IsTextInputActive() {
   std::lock_guard<std::mutex> lock(instance->mtx); // thread safety
   return instance->use_text_input;

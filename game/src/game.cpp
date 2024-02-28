@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <asset-manager.hpp>
+#include <glm/ext/matrix_transform.hpp>
 #include <input.hpp>
 
 static Game *game; // this is dirty but it works for now
@@ -10,7 +11,6 @@ static Game *game; // this is dirty but it works for now
 #ifdef SHARED_GAME
 #include <cassert>
 #include <cr.h>
-#include <glm/ext/matrix_transform.hpp>
 
 static int loaded_timestamp = 0;
 
@@ -49,6 +49,7 @@ int Game::init(SharedData *shared_data) {
 
   // map the text_input_buffer
   InputManager::SetTextInputBuffer(&shared_data->text_input_buffer[0]);
+  InputManager::SetInputVolumeRef(shared_data->input_volume);
   // Get current window size
   int w, h;
   SDL_GetWindowSize(SDL_GL_GetCurrentWindow(), &w, &h);
@@ -98,7 +99,17 @@ int Game::update() {
     this->meshRenderer->DrawMesh(mesh.get(), mesh->model);
   }
 
-  this->font->RenderText(this->spriteBatcher.get(), "Hello, NPC!",
+  // clamp volume to 0.0f - 1.0f
+  const float clamp_volume =
+      glm::clamp(InputManager::GetInputVolume(), 0.0f, 1.0f);
+
+  char input_volume_percent_3_figures[4];
+  sprintf(input_volume_percent_3_figures, "%.1f", clamp_volume * 100.0f);
+
+  const std::string text =
+      "Mic: " + std::string(input_volume_percent_3_figures) + '%';
+
+  this->font->RenderText(this->spriteBatcher.get(), text.c_str(),
                          glm::vec2(0, 0), glm::vec2(1.0f),
                          glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 

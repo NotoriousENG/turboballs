@@ -2,7 +2,7 @@
 
 Window::Window(const char *title, int width, int height) {
   // Initialize SDL
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
     printf("Failed to init SDL!\n");
     return;
   }

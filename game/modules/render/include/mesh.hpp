@@ -10,7 +10,7 @@ struct Vertex3D {
   glm::vec2 texCoords;
   glm::vec3 normal;
 
-  Vertex3D(glm::vec3 position, glm::vec2 texCoords)
+  Vertex3D(glm::vec3 position, glm::vec2 texCoords, glm::vec3 normal)
       : position(position), texCoords(texCoords), normal(normal) {}
 
   Vertex3D(float x, float y, float z, float u, float v, float nx, float ny,

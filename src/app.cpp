@@ -17,6 +17,9 @@ static App *app_instance;
 void emscripten_update() { app_instance->update(); }
 #endif
 
+#define SAMPLE_RATE 44100
+#define FRAMES_PER_BUFFER 512
+
 App::App() {
   this->is_running = true;
   // memset clear the shared data buffer
@@ -32,7 +35,26 @@ void App::run() {
                                           initial_window_size.y);
   this->renderer = std::make_unique<Renderer>(this->window.get());
 
+  SDL_memset(&want, 0, sizeof(want)); /* or SDL_zero(want) */
+  want.freq = SAMPLE_RATE;
+  want.format = AUDIO_F32SYS;
+  want.channels = 1;
+  want.samples = FRAMES_PER_BUFFER;
+  want.callback = audio_callback;
+
+  SDL_AudioDeviceID dev = SDL_OpenAudioDevice(NULL, 1, &want, &have, 0);
+  if (dev == 0) {
+    SDL_Log("Failed to open audio: %s", SDL_GetError());
+    // @todo implement a retry mechanism
+    return;
+  }
+
+  // begin listining to audio
+  SDL_PauseAudioDevice(dev, 0);
+
   SDL_StopTextInput(); // ensure this is off by default
+
+  this->shared_data.input_volume = &input_volume;
 
 #ifdef SHARED_GAME
   SDL_Log("Shared Lib: %s", GAME_LIBRARY_PATH);
@@ -80,6 +102,8 @@ void App::onClose() {
   this->game.unload();
   this->game.close();
 #endif
+
+  SDL_CloseAudioDevice(dev);
   // destroy the renderer this has to be done before the
   // window is destroyed
   this->renderer.reset();
@@ -112,4 +136,20 @@ void App::poll_events() {
       break;
     }
   }
+}
+
+void audio_callback(void *userdata, Uint8 *stream, int len) {
+  float *buffer = reinterpret_cast<float *>(stream);
+  float max = 0.0f;
+
+  for (int i = 0; i < len / sizeof(float); i++) {
+    float absValue = std::abs(buffer[i]);
+    if (absValue > max) {
+      max = absValue;
+    }
+  }
+
+  input_volume = max;
+
+  SDL_Log("Max: %f", max);
 }
