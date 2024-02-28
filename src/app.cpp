@@ -150,6 +150,4 @@ void audio_callback(void *userdata, Uint8 *stream, int len) {
   }
 
   input_volume = max;
-
-  SDL_Log("Max: %f", max);
 }
