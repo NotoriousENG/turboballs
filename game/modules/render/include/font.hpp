@@ -42,5 +42,5 @@ private:
   std::unordered_map<char, Glyph> glyphs;
 
   GLuint tex;
-  int texDim = 512;
+  int texDim = 1024;
 };
