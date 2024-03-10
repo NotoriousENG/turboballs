@@ -196,34 +196,12 @@ int Game::update() {
     this->meshRenderer->DrawMesh(mesh.get(), xform);
   }
 
-  char input_volume_percent_3_figures[4];
-  sprintf(input_volume_percent_3_figures, "%.1f", clamp_volume * 100.0f);
-
-  const std::string text =
-      "Mic: " + std::string(input_volume_percent_3_figures) + '%';
-
-  this->font->RenderText(this->spriteBatcher.get(), text.c_str(),
-                         glm::vec2(0, 600 - 32), glm::vec2(1.0f),
-                         glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-
-  const std::string score_text = "Score: " + std::to_string(this->score);
-  this->font->RenderText(this->spriteBatcher.get(), score_text.c_str(),
-                         glm::vec2(0, 0), glm::vec2(1.0f),
-                         glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-
-  const std::string high_score_text =
-      "High Score: " + std::to_string(this->highScore);
-  // render high score (top right)
-  this->font->RenderText(this->spriteBatcher.get(), high_score_text.c_str(),
-                         glm::vec2(420, 0), glm::vec2(1.0f),
-                         glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-
   if (!isPlaying) {
     // render every half second
     if (SDL_GetTicks() % 1500 < 750) {
       const std::string pause_text = "Press Enter to Play";
       this->font->RenderText(this->spriteBatcher.get(), pause_text.c_str(),
-                             glm::vec2(180, 300), glm::vec2(1.0f),
+                             glm::vec2(150, 300), glm::vec2(1.0f),
                              glm::vec4(0.7f, 1.0f, 0.93f, 0.8f));
     }
 
@@ -231,8 +209,30 @@ int Game::update() {
 
     const std::string title = "Turboballs";
     this->fontBig->RenderText(this->spriteBatcher.get(), title.c_str(),
-                              glm::vec2(150, 200), glm::vec2(1.0f),
+                              glm::vec2(130, 200), glm::vec2(1.0f),
                               glm::vec4(0.0f, 1.0f, 1.0f, 1.0f));
+  } else {
+    char input_volume_percent_3_figures[4];
+    sprintf(input_volume_percent_3_figures, "%.1f", clamp_volume * 100.0f);
+
+    const std::string text =
+        "Mic: " + std::string(input_volume_percent_3_figures) + '%';
+
+    this->font->RenderText(this->spriteBatcher.get(), text.c_str(),
+                           glm::vec2(0, 600 - 32), glm::vec2(1.0f),
+                           glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+
+    const std::string score_text = "Score: " + std::to_string(this->score);
+    this->font->RenderText(this->spriteBatcher.get(), score_text.c_str(),
+                           glm::vec2(0, 0), glm::vec2(1.0f),
+                           glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+
+    const std::string high_score_text =
+        "High Score: " + std::to_string(this->highScore);
+    // render high score (top right)
+    this->font->RenderText(this->spriteBatcher.get(), high_score_text.c_str(),
+                           glm::vec2(420, 0), glm::vec2(1.0f),
+                           glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
   }
 
   // draw all sprites in the batch (note text is also a sprite)
