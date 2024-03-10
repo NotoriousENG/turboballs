@@ -27,6 +27,12 @@ bool Shader::LoadFromFile(const char *filePath, GLenum shaderType) {
   shaderStream << shaderFile.rdbuf();
   std::string shaderSource = shaderStream.str();
 
+#ifdef __APPLE__
+  // replace #version 300 es with #version 410
+  // mac only likes 2.1 compat or 4.1 core
+  shaderSource.replace(0, 15, "#version 410");
+#endif
+
   return LoadFromString(shaderSource, shaderType);
 }
 

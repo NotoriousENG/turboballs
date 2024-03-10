@@ -90,6 +90,11 @@ int Game::init(SharedData *shared_data) {
 }
 
 int Game::update() {
+
+  float time = SDL_GetTicks() / 1000.0f;
+  float delta = time - this->lastTime;
+  this->lastTime = time;
+
   // INPUT:
   int num_keys;
   const Uint8 *key_state = SDL_GetKeyboardState(&num_keys);
@@ -110,7 +115,7 @@ int Game::update() {
 
   if (isPlaying) {
     // increase t
-    this->t += 0.01f;
+    this->t += 0.4f * delta; // in one second t will be 0.4f
 
     // PLAYER:
 

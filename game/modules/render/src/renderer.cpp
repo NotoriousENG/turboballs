@@ -28,12 +28,24 @@ Renderer::Renderer(Window *window) {
 // Create OpenGL context
 // Set the OpenGL context attributes (needed for renderdoc)
 #ifndef EMSCRIPTEN
+#ifdef __APPLE__
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  // enable double buffering (should be on by default)
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+#else
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,
                       SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
   // Core profile
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+#endif
 #endif
 
   this->glContext = SDL_GL_CreateContext(window->GetSDLWindow());
@@ -55,11 +67,14 @@ Renderer::Renderer(Window *window) {
 #ifndef EMSCRIPTEN
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+
+#ifndef __APPLE__
   glDebugMessageCallback(openglCallbackFunction, nullptr);
   glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL,
                         GL_FALSE);
   glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_ERROR, GL_DONT_CARE,
                         0, NULL, GL_TRUE);
+#endif
 #endif
 
   glEnable(GL_DEPTH_TEST);

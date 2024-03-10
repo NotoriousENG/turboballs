@@ -59,4 +59,5 @@ public:
   int highScore = 0;
 
   bool isPlaying = false;
+  float lastTime = 0.0f;
 };
