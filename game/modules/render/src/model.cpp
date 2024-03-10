@@ -48,6 +48,17 @@ void Model::loadGLTF(std::string path) {
 
   std::vector<std::shared_ptr<Material>> materials;
 
+  // if there are no materials, create a placeholder material
+  if (model.materials.empty()) {
+    std::shared_ptr<Material> m = std::make_shared<Material>();
+    m->baseColorFactor = glm::vec3(1.0f, 0.0f, 1.0f);
+    m->metallicFactor = 1.0f;
+    m->roughnessFactor = 1.0f;
+    m->emissiveFactor = m->baseColorFactor;
+    m->emissiveStrength = 1.0f;
+    materials.push_back(m);
+  }
+
   // load the materials
   for (const auto &mat : model.materials) {
     std::shared_ptr<Material> m = std::make_shared<Material>();
@@ -173,6 +184,8 @@ void Model::loadGLTF(std::string path) {
       if (materialId >= 0) {
         SDL_Log("Material id: %d", materialId);
         mesh->material = materials[materialId];
+      } else {
+        mesh->material = materials[0];
       }
       meshes.push_back(mesh);
     }

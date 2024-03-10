@@ -12,6 +12,8 @@ public:
 
   void DrawMesh(Mesh *mesh, glm::mat4 model);
 
+  void SetViewMatrix(glm::mat4 viewMatrix);
+
 private:
   void setMaterialUniforms(GLuint shaderProgram, const Material *material);
   Shader vertexShader;

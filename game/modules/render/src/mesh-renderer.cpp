@@ -86,6 +86,13 @@ void MeshRenderer::DrawMesh(Mesh *mesh, glm::mat4 model) {
   glUseProgram(0);
 }
 
+void MeshRenderer::SetViewMatrix(glm::mat4 viewMatrix) {
+  glUseProgram(this->shaderProgram);
+  GLint viewLoc = glGetUniformLocation(this->shaderProgram, "view");
+  glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+  glUseProgram(0);
+}
+
 void MeshRenderer::setMaterialUniforms(GLuint shaderProgram,
                                        const Material *material) {
   glUniform3fv(glGetUniformLocation(shaderProgram, "material.baseColorFactor"),
