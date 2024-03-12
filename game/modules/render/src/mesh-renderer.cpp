@@ -81,6 +81,11 @@ void MeshRenderer::DrawMesh(Mesh *mesh, glm::mat4 model) {
                         (void *)offsetof(Vertex3D, normal));
   glEnableVertexAttribArray(2);
 
+  // color attribute
+  glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex3D),
+                        (void *)offsetof(Vertex3D, color));
+  glEnableVertexAttribArray(3);
+
   glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
   glUseProgram(0);

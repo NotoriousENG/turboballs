@@ -123,6 +123,22 @@ void Model::loadGLTF(std::string path) {
       const auto &normalCount = normalAccessor.count;
       const auto &normalCompSize = normalAccessor.type;
 
+      // COLOR
+
+      const auto &colorAccessor = model.accessors[p.attributes.at("COLOR_0")];
+      const auto &colorBufferView =
+          model.bufferViews[colorAccessor.bufferView];
+      const auto &colorBuffer = model.buffers[colorBufferView.buffer];
+
+      const unsigned short *colorData = reinterpret_cast<const unsigned short *>(
+          &colorBuffer
+               .data[colorAccessor.byteOffset + colorBufferView.byteOffset]);
+
+      const auto &colorType = colorAccessor.type;
+      const auto &colorCompType = colorAccessor.componentType;
+      const auto &colorCount = colorAccessor.count;
+      const auto colorCompSize = colorAccessor.type;
+
       // TEXCOORD_0
 
       const auto &texAccessor = model.accessors[p.attributes.at("TEXCOORD_0")];
@@ -137,13 +153,16 @@ void Model::loadGLTF(std::string path) {
       const auto &texCount = texAccessor.count;
       const auto &texCompSize = texAccessor.type;
 
-      // Populate the vertices vector (pos, texCoords, normal)
+      // Populate the vertices vector (pos, texCoords, normal, color)
       for (size_t i = 0; i < posCount; i++) {
         Vertex3D vertex;
         vertex.position =
             glm::vec3(posData[i * 3], posData[i * 3 + 1], posData[i * 3 + 2]);
         vertex.normal = glm::vec3(normalData[i * 3], normalData[i * 3 + 1],
                                   normalData[i * 3 + 2]);
+        vertex.color = glm::vec4(colorData[i * 4] / 65535.0,
+                                 colorData[i * 4 + 1] / 65535.0,
+            colorData[i * 4 + 2] / 65535.0, colorData[i * 4 + 3] / 65535.0);
         vertex.texCoords = glm::vec2(texData[i * 2], texData[i * 2 + 1]);
 
         vertices.push_back(vertex);

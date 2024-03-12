@@ -181,6 +181,8 @@ int Game::update() {
 
   // RENDER:
 
+  // RENDER BACKGROUND TO A BUFFER TEXTURE:
+
   for (const auto &mesh : this->worldModel->getMeshes()) {
     this->meshRenderer->DrawMesh(mesh.get(), mesh->model);
   }
@@ -189,6 +191,12 @@ int Game::update() {
     glm::mat4 xform = glm::translate(mesh->model, this->ballPos);
     this->meshRenderer->DrawMesh(mesh.get(), xform);
   }
+
+  // RENDER TO A BLUR TEXTURE
+
+  // RENDER THE BACKGROUND TO THE SCREEN AS A SPRITE, USING THE BLUR TO POST PROCESS
+
+  // RENDER THE PLAYER, USING THE BLUR TO POST PROCESS
 
   for (const auto &mesh : this->npcModel->getMeshes()) {
     glm::mat4 xform = glm::translate(mesh->model, this->enemyPos);
@@ -200,6 +208,8 @@ int Game::update() {
     glm::mat4 xform = glm::translate(mesh->model, this->playerPos);
     this->meshRenderer->DrawMesh(mesh.get(), xform);
   }
+
+  // RENDER THE TEXT, ALSO USING THE BLUR CUZ WHY NOT
 
   if (!isPlaying) {
     // render every half second
@@ -217,7 +227,7 @@ int Game::update() {
                               glm::vec2(130, 200), glm::vec2(1.0f),
                               glm::vec4(0.0f, 1.0f, 1.0f, 1.0f));
   } else {
-    char input_volume_percent_3_figures[4];
+    char input_volume_percent_3_figures[6];
     sprintf(input_volume_percent_3_figures, "%.1f", clamp_volume * 100.0f);
 
     const std::string text =

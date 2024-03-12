@@ -4,6 +4,7 @@ precision highp float;
 in vec3 FragPos;
 in vec2 TexCoords;
 in vec3 Normals;
+in vec4 Colors;
 in vec3 CamPos;
 
 out vec4 FragColor;
@@ -50,17 +51,11 @@ vec3 getLitResult(vec3 objectColor) {
 
   vec3 result = (ambient + diffuse + specular) * objectColor;
 
-  // ACES tone mapping
-  result = ACESFilm(result);
-
-  // gamma correction
-  result = pow(result, vec3(1.0 / 2.2));
-
   return result;
 }
 
 void main() {
-  vec3 objectColor = material.baseColorFactor * (1.0 - material.metallicFactor);
+  vec3 objectColor = material.baseColorFactor * (1.0 - material.metallicFactor) * Colors.rgb;
   objectColor += material.emissiveFactor * material.emissiveStrength;
 
   // only apply lighting if the object is not emissive
@@ -69,6 +64,11 @@ void main() {
     return;
   }
 
-  vec3 result = getLitResult(objectColor);
+  vec3 result = objectColor; //getLitResult(objectColor);
+
+  result = ACESFilm(result);
+  // gamma correction
+  result = pow(result, vec3(1.0 / 2.2));
+
   FragColor = vec4(result, 1.0);
 }
