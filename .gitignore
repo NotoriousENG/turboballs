@@ -592,3 +592,7 @@ build
 
 vcpkg_installed
 CMakePresets.json
+
+# only commit glb files, use .blend for development
+*.gltf 
+*.bin
