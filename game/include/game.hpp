@@ -35,7 +35,6 @@ public:
 
   std::shared_ptr<Music> music;
 
-  const float maxX = 1.8f;
   const float camMaxX = 12.0f;
   const float ballMaxX = 9.0f;
 
@@ -47,13 +46,13 @@ public:
   glm::vec3 camPos = glm::vec3(0.0f, 2.85f, 15.63f);
   const glm::vec3 camUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-  glm::vec3 playerPos = glm::vec3(-maxX, 0.0f, 2.4f);
-  glm::vec3 enemyPos = glm::vec3(0.0f, 0.0f, 0.0f);
-
   glm::vec3 ballBeginPos = glm::vec3(-ballMaxX + ballOffset, 0.0f, 0.0f);
   glm::vec3 ballEndPos = glm::vec3(-ballMaxX, 0.0f, playerBallDestZ);
 
   glm::vec3 ballPos = glm::vec3(0.0f, -5.0f, 0.0f);
+
+  glm::mat4 playerTransform = glm::mat4(1.0f);
+  glm::mat4 enemyTransform = glm::mat4(1.0f);
 
   int score = 0;
   int highScore = 0;

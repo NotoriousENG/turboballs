@@ -70,10 +70,11 @@ int Game::init(SharedData *shared_data) {
 
   this->music = AssetManager<Music>::get(RES_MUSIC_TURBOBALLS);
 
-  for (const auto &mesh : this->npcModel->getMeshes()) {
-    // scale the model up by 10
-    mesh->model = glm::scale(mesh->model, glm::vec3(5.0f));
-  }
+  // set scale for player and enemy
+  this->playerTransform = glm::scale(this->playerTransform, glm::vec3(5.0f));
+  this->playerTransform[3].x = -this->ballMaxX;
+  this->playerTransform[3].z = playerBallDestZ + 1.0f;
+  this->enemyTransform = glm::scale(this->enemyTransform, glm::vec3(5.0f));
 
   this->music->play_on_loop();
 
@@ -111,6 +112,10 @@ int Game::update() {
   const float clamp_volume =
       glm::clamp(InputManager::GetInputVolume(), 0.0f, 1.0f);
 
+  // get player x pos from transform
+  float playerPosX = this->playerTransform[3].x;
+  float enemyPosX = this->enemyTransform[3].x;
+
   // LOGIC:
 
   if (isPlaying) {
@@ -121,21 +126,19 @@ int Game::update() {
 
     // set player position (x) based off input volume
     // 0 is -maxX, 1 is maxX
-    this->playerPos.x = (clamp_volume * this->maxX * 2) - this->maxX;
+    const float playerPosX =
+        (clamp_volume * this->ballMaxX * 2) - this->ballMaxX;
+    playerTransform[3].x = playerPosX;
 
     // CAMERA:
     // set the cam pos based off the player pos rel to max
-    this->camPos.x = this->playerPos.x / this->maxX * this->camMaxX;
+    this->camPos.x = playerPosX / this->ballMaxX * this->camMaxX;
     glm::mat4 view = glm::lookAt(this->camPos, glm::vec3(0), this->camUp);
     this->meshRenderer->SetViewMatrix(view);
 
-    // BALL:
-    float adjX = this->playerPos.x / this->maxX * this->ballMaxX;
-
-    glm::vec3 adjVec = glm::vec3(adjX, 0.0f, playerBallDestZ);
-
     if (ballEndPos.z == playerBallDestZ) {
-      if (glm::distance(this->ballPos, adjVec) < 2.0f) {
+      if (glm::distance(this->ballPos, glm::vec3(this->playerTransform[3])) <
+          3.5f) {
         // increase score
         this->score++;
         this->t = 1.1f;
@@ -175,8 +178,9 @@ int Game::update() {
 
     // ENEMY:
     // lerp the enemy z pos to always be the ballEndPos x
-    this->enemyPos.x = glm::mix(this->enemyPos.x,
-                                ballEndPos.x / this->ballMaxX * this->maxX, t);
+    enemyPosX = glm::mix(enemyPosX, ballEndPos.x, t);
+
+    enemyTransform[3].x = enemyPosX;
   }
 
   // RENDER:
@@ -194,19 +198,17 @@ int Game::update() {
 
   // RENDER TO A BLUR TEXTURE
 
-  // RENDER THE BACKGROUND TO THE SCREEN AS A SPRITE, USING THE BLUR TO POST PROCESS
+  // RENDER THE BACKGROUND TO THE SCREEN AS A SPRITE, USING THE BLUR TO POST
+  // PROCESS
 
   // RENDER THE PLAYER, USING THE BLUR TO POST PROCESS
 
   for (const auto &mesh : this->npcModel->getMeshes()) {
-    glm::mat4 xform = glm::translate(mesh->model, this->enemyPos);
-    this->meshRenderer->DrawMesh(mesh.get(), xform);
+    this->meshRenderer->DrawMesh(mesh.get(), playerTransform * mesh->model);
   }
 
   for (const auto &mesh : this->npcModel->getMeshes()) {
-    // translate mesh by playerPos (before rotation and scale)
-    glm::mat4 xform = glm::translate(mesh->model, this->playerPos);
-    this->meshRenderer->DrawMesh(mesh.get(), xform);
+    this->meshRenderer->DrawMesh(mesh.get(), enemyTransform * mesh->model);
   }
 
   // RENDER THE TEXT, ALSO USING THE BLUR CUZ WHY NOT
