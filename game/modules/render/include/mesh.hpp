@@ -11,10 +11,13 @@ struct Vertex3D {
   glm::vec3 normal;
   glm::vec4 color;
 
-  Vertex3D(glm::vec3 position, glm::vec2 texCoords, glm::vec3 normal, glm::vec4 color)
-      : position(position), texCoords(texCoords), normal(normal), color(color) {}
+  Vertex3D(glm::vec3 position, glm::vec2 texCoords, glm::vec3 normal,
+           glm::vec4 color)
+      : position(position), texCoords(texCoords), normal(normal), color(color) {
+  }
 
-  Vertex3D(float x, float y, float z, float u, float v, float nx, float ny, float nz, float r, float g, float b, float a) {
+  Vertex3D(float x, float y, float z, float u, float v, float nx, float ny,
+           float nz, float r, float g, float b, float a) {
     position = glm::vec3(x, y, z);
     texCoords = glm::vec2(u, v);
     normal = glm::vec3(nx, ny, nz);

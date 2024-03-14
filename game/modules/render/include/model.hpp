@@ -2,8 +2,8 @@
 
 #include "mesh.hpp"
 
-#include <string>
 #include <memory>
+#include <string>
 #include <vector>
 
 class Model {
