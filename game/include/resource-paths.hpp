@@ -2,8 +2,6 @@
 
 // resource paths:
 
-#define RES_FONT_VERA "assets/fonts/Vera.ttf"
-
 #define RES_FONT_CYBERDYNE "assets/fonts/cyberdyne.ttf"
 
 #define RES_MODEL_VAPOR "assets/models/vaporwave/vapor.glb"
